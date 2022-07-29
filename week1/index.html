@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="">
+	<head>
+		<title>VTBI Week 1</title>
+		<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/white.min.css">
+        <link type="text/css" rel="stylesheet" href="index.css">
+    </head>
+
+    <body>
+
+    	<div class="reveal">
+    		<div class="slides">
+
+    			<section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+    				<h2>The development of vision transformers</h2>
+                    <hr/>
+
+                    <h4>VTBI Journal Club</h4>
+                    
+    				Matthew Guay <br/>
+
+                    <br/>
+
+		            <a href="https://vtbi-jc.github.io/week1" target="_blank">https://vtbi-jc.github.io/week1</a>
+    			</section>
+
+
+
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <h2>Introductions</h2>
+                </section>
+		    
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Welcome
+
+                        - Thank you for your interest!
+
+                        - Thanh Le and I want to track new computer vision developments in biomedical imaging.
+
+                        - Learning is best done together. Let's discuss!
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### My Journal Club Goals
+
+                        - Technical mastery of vision transformer architectures.
+                        - Explore the role of large(r) vision models in biomedical imaging.
+                        - Explore SOTA biomedical vision models.
+                        - Take away **actionable insights** for production vision models.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Talk Overview
+
+                        1. **Introductions**: we're joining from many  places.
+                        2. **Transformers**: The original paper.
+                        3. **Vision Transformers**: Development of ViT.
+                        4. **_Questions_**: Asked and discussed throughout! 
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### About Me
+
+                        - **Matt Guay**: Principal computer vision scientist at Moichor.
+                        - Working with Thanh Le (CTO) on computer vision problems in veterinary pathology.
+                        - Automated complete blood count (CBC) used in production on thousands of samples per month.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ![Avian bloodsmear example, with labeled leukocytes](./img/meexample.png)
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### What About You?
+
+                        - What is your background?
+                        - What do you want to take away from this journal club?
+                    </textarea>
+                </section>
+
+
+
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <h2>Attention is All you Need</h2>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Background
+
+                        - Domain: **sequence modeling** (e.g. language translation).
+                        - Prior SOTA relied on recurrent neural networks (RNNs).
+                        - Growing interest in **attention** for long-term dependencies.
+                        - **Main idea**: Use networks with only attention, no recurrence.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Why?
+
+                        - **Efficiency**: More parallelizable than RNNs, captures longer dependencies with fewer operations.
+
+                        ![Comparison of complexity measures between layer types](./img/complexity_comparison.png)
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Why?
+
+                        ![A detailed comparison with convolution operations](./img/conv_details.png)
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Results
+
+                        - Original Transformer achieved SOTA language translation results  with far fewer FLOPs.
+
+                        ![Transformer BLEU scores](./img/trans_results.png)
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Legacy
+
+                        - Self-attention-based methods overtook others in major NLP benchmarks.
+                        - People started wondering if they could be applied to vision, too.
+                        - Vision transformers are now a highly active research area.
+                    </textarea>
+                </section>
+
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+
+                        ## How it Works
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Transformer modules
+
+                        ![Transformer architecture](./img/trans_arch.png)
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Attention
+
+                        - Attention: Weighted sum of values based on compatibility between a query and keys in key-value pairs.
+
+                        - **Scaled dot-product attention**: Computed on matrices of
+                            packed queries $Q$, keys $K$, values $V$:
+
+                        $$\mathrm{Attention}(Q, K, V) = \mathrm{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Multi-Head Attention
+
+                        - **Multi-head attention**: Attention functions on multiple learned projections of $Q$, $K$, $V$, concatenate outputs, project concatenation.
+
+                        $$\mathrm{MultiHead}(Q, K, V)=\mathrm{Concat}(\mathrm{head}_1,\ldots,\mathrm{head}_h)W^O$$
+                        $$\mathrm{head}_i=\mathrm{Attention}(QW_i^Q, KW_i^K, VW_i^V)$$
+
+                        - Projections are (learned) parameter matrices $\{W_i^Q\}$, $\{W_i^K\}$, $\{W_i^V\}$, and $W^O$.
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Three attention functions
+
+                        ![Labeled attention modules](./img/labeled_attention.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Feed-Forward Networks
+
+                        ![Labeled attention modules](./img/ffn.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Add & Norm
+
+                        - Residual connections with [GELU activation functions](https://paperswithcode.com/method/gelu).
+
+                        $$\mathrm{GELU}(x)=x\cdot\frac12\left[1+\mathrm{erf}(x/\sqrt{2})\right]$$
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Encoder Module
+
+                        - Simpler: just stacked self-attention + FFN modules.
+
+                        ![Encoder module](./img/encoder.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Decoder Module
+
+                        ![Decoder module](./img/decoder.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Embedding and unembedding
+
+                        ![Embedding and undembedding](./img/embeddings.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Positional encoding
+
+                        - Input token sequence is a one-hot encoded vector in a vocabulary.
+                        - No create a representation of sequence element position.
+                        - Map position indices to vectors, add to token embeddings.
+
+                        ![Positional encoding](./img/pos_embedding.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Putting it together
+
+                        - Text sequences converted to token embedding + position embedding vector.
+                        - Encoder of stacked attention + FFN modules transforms embedding vector.
+                        - Autoregressive decoder starts with `bos_token`, masked attention + encoder + unembedding returns an output text sequence. 
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Training - Data and Hardware
+
+                        ![Training](./img/training1.png)
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Training - Optimizer
+
+                        - **Optimizer**: Adam, $\beta_1=0.9$, $\beta_2=0.98$, $\epsilon=10^{-9}$.
+                        - **Learning rate** $\lambda$ for step $t$, # warmup steps $w$:
+                        $$\lambda=d_{\mathrm{model}}^{-0.5}\cdot\min(t^{-0.5}, t\cdot w^{-1.5})$$
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Training - Regularization
+
+                        ![Regularization](./img/regularization.png)
+                    </textarea>
+                </section>
+
+
+
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+
+                        <h2>From Text to Images</h2>
+
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Why Transformers for Images?
+
+                        - Convnets work because conv ops efficiently induce biases well-suited for pixel data.
+
+                        - Expensive to capture long-range dependencies with only conv layers.
+
+                        - **Problem**: Pixel data is much more dense than text.
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### An Image Is Worth 16x16 Words
+
+                        - **Vision transformer** (ViT): Image classifier built from a transformer encoder.
+
+                        - Chunk images into patches, embed patches as vectors just like text tokens.
+
+                        - Lack of image inductive biases means huge datasets required to beat convnets.
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### ViT overview
+                        
+                        ![Vision Transformer](./img/vit.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Image embedding - patches
+                        
+                        ![Image patches](./img/imagepatches.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Image embedding - classification
+                        
+                        ![Image classification](./img/vit_classification.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Models variants
+                        
+                        ![Model variants](./img/vit_variants.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Training
+                        
+                        ![Training](./img/vit_training.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Results
+                        
+                        ![Results](./img/vit_results.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Pretraining needs
+                        
+                        - Performance only surpassed resnets after pre-training on JFT-300M.
+                        - ViT does not include spatial locality or 2D neighborhood priors.
+                        - Compare ViT and competitor performance vs pre-training data size.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Pretraining comparison
+                        
+                        ![Pretraining comparison](./img/vit_pretraining.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    
+                    <h2>Conclusions</h2>
+
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### The transformer architecture
+                        
+                        - Transformers use attention functions for simple, powerful sequence modeling.
+                        - Sequence modeling architectures can be adapted to image token sequences.
+                        - Lack of image inductive biases instill huge data requirements.
+                        - **Question**: Is there a way to do this better?
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Looking forward
+                        
+                        - Can transformers carry image biases? Should they?
+                        - Are there better ways to pre-train vision transformers?
+                        - How does this apply to biomedicine?
+
+                    </textarea>
+                </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    		</div>
+    	</div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/markdown/marked.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/markdown/markdown.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/math/math.js"></script>
+
+        
+        <script type="text/javascript">
+            Reveal.initialize({
+
+                math: {
+                    mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js',
+                    config: 'TeX-AMS_HTML-full'
+                },
+
+                // Factor of the display size that should remain empty around the content
+                margin: 0.03,
+
+                // Display controls in the bottom right corner
+                controls: true,
+
+                // Display a presentation progress bar
+                progress: true,
+
+                // Set default timing of 2 minutes per slide
+                defaultTiming: 90,
+
+                // Display the page number of the current slide
+                slideNumber: true,
+
+                // Push each slide change to the browser history
+                history: false,
+
+                // Enable keyboard shortcuts for navigation
+                keyboard: true,
+
+                // Enable the slide overview mode
+                overview: true,
+
+                // Vertical centering of slides
+                center: true,
+
+                // Enables touch navigation on devices with touch input
+                touch: true,
+
+                // Loop the presentation
+                loop: false,
+
+                // Change the presentation direction to be RTL
+                rtl: false,
+
+                // Randomizes the order of slides each time the presentation loads
+                shuffle: false,
+
+                // Turns fragments on and off globally
+                fragments: true,
+
+                // Flags if the presentation is running in an embedded mode,
+                // i.e. contained within a limited portion of the screen
+                embedded: false,
+
+                // Flags if we should show a help overlay when the questionmark
+                // key is pressed
+                help: true,
+
+                // Flags if speaker notes should be visible to all viewers
+                showNotes: false,
+
+                // Global override for autolaying embedded media (video/audio/iframe)
+                // - null: Media will only autoplay if data-autoplay is present
+                // - true: All media will autoplay, regardless of individual setting
+                // - false: No media will autoplay, regardless of individual setting
+                autoPlayMedia: null,
+
+                // Number of milliseconds between automatically proceeding to the
+                // next slide, disabled when set to 0, this value can be overwritten
+                // by using a data-autoslide attribute on your slides
+                autoSlide: 0,
+
+                // Stop auto-sliding after user input
+                autoSlideStoppable: true,
+
+                // Use this method for navigation when auto-sliding
+                autoSlideMethod: Reveal.navigateNext,
+
+                // Enable slide navigation via mouse wheel
+                mouseWheel: false,
+
+                // Hides the address bar on mobile devices
+                hideAddressBar: true,
+
+                // Opens links in an iframe preview overlay
+                previewLinks: false,
+
+                // Transition style
+                transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+                // Transition speed
+                transitionSpeed: 'default', // default/fast/slow
+
+                // Transition style for full page slide backgrounds
+                backgroundTransition: 'fade', // none/fade/slide/convex/concave/zoom
+
+                // Number of slides away from the current that are visible
+                viewDistance: 3,
+
+                // Parallax background image
+                parallaxBackgroundImage: '', // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+                // Parallax background size
+                parallaxBackgroundSize: '', // CSS syntax, e.g. "2100px 900px"
+
+                // Number of pixels to move the parallax background per slide
+                // - Calculated automatically unless specified
+                // - Set to 0 to disable movement along an axis
+                parallaxBackgroundHorizontal: null,
+                parallaxBackgroundVertical: null,
+
+                // The display mode that will be used to show slides
+                display: 'block'
+            });
+        </script>
+
+    </body>
+        
+</html>
