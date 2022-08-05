@@ -166,6 +166,174 @@
 
 
 
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <h3>Swin Transformer: Hierarchical Vision Transformer using Shifted Windows</h3>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Introduction
+
+                        - **Goal**: Transformer architecture for general-purpose computer vision (including detection and segmentation).
+
+                        - Dense prediction requires high image resolution and small token patches.
+
+                        - Self-attention complexity grows like $n^2$ with token sequence length $n$.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Strategy
+
+                        - **Restricted self-attention** on windows of patch tokens.
+
+                        - **Patch merging** to create a spatial token hierarchy. Feature maps can replace convnet backbones.
+
+                        - Alternating **shifted self-attention** windowing patterns allow cross-window communication.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Swin feature hierarchy
+
+                        <div class="container">
+
+                        <div class="col">
+                            ![Swin fig1 image](./img/swin_fig1_image.png)
+                        </div>
+
+                        <div class="col">
+                        <br/>
+
+                        ![Swin fig1 text](./img/swin_fig1_text.png)
+                        </div>
+
+                        </div>
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Swin feature hierarchy:
+
+                        - **Patch merging**: Concatenate neighboring 2x2 $C$-dimensional tokens, project with FC layer to 0.25x $2C$-dimensional tokens.
+
+                        - Produce pyramid of shape-$\left(\frac{H}{2^{n+2}}\times\frac{W}{2^{n+2}}\times 2^nC\right)$ features maps for $n=0,1,2,3$.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Shifted window self-attention
+
+                        <div class="container">
+
+                        <div class="col">
+                            ![Swin fig2 image](./img/swin_fig2_image.png)
+                        </div>
+
+                        <div class="col">
+
+                        ![Swin fig2 text](./img/swin_fig2_text.png)
+                        </div>
+
+                        </div>
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Window multihead self-attention
+
+                        - _Windowed multihead self-attention_ (W-MSA): Given $h\times w$ patches, choose window size $M$, compute self-attention on $M^2$ neighboring patches instead of global $h\times w$ patches. 
+
+                        $$\Omega(\mathrm{MSA})=4hwC^2+2(hw)^2C$$
+                        $$\Omega(\mathrm{W\mbox{-}MSA})=4hwC^2+2M^2hwC$$
+
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Shifted window partitioning
+
+                        - If all blocks use same windows, attention is constrained per-window.
+
+                        - **Shifted windows**: Alternate windowing between W-MSA blocks, with overlapping patterns.
+
+                        - Use W-MSA for standard windows, SW-MSA for shifted windows.
+
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Efficient shifted batch computation
+
+                        ![Efficient scheme for computing batches of shifted windows](./img/swin_shiftbatch.png)
+
+                        - Restrict self-attention in mixed batches to contiguous regions.
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Relative position bias
+
+                        - Recall: ViT used 1D absolute position embeddings.
+
+                        - Swin uses 2D **relative position bias**: $$\mathrm{Attention}(Q, K, V)=\mathrm{SoftMax}(QK^T/\sqrt{d}+B)V$$
+
+                        - $B\in\mathbb{R}^{M^2\times M^2}$ parametrized by $\hat{B}\in\mathbb{R}^{(2M-1)\times(2M-1)}$.
+
+                        - $\hat{B}$ learned.
+
+
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Swin transformer architecture
+
+                        ![Swin transformer architecture](./img/swin_arch.png)
+
+                    </textarea>
+                </section>
+
+
+
     		</div>
     	</div>
 
