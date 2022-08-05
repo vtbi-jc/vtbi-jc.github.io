@@ -60,6 +60,23 @@
                 </section>
 
 
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Things to think about
+
+                        - How do we handle transformers/self-attention for high-res (maybe 3D?) images?
+
+                        - How do we create compute-efficient (high performance/FLOP) vision models?
+
+                        - How do we create training-efficient vision models?
+
+                        - How do we create (useful) **large** vision models?
+
+                    </textarea>
+                </section>
+
+
                 <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
                     <h3>Training data-efficient image transformers</h3>
                 </section>
@@ -279,7 +296,7 @@
                     <textarea data-template>
                         ### Shifted window partitioning
 
-                        - If all blocks use same windows, attention is constrained per-window.
+                        - If all blocks use same windows, information is siloed per-window.
 
                         - **Shifted windows**: Alternate windowing between W-MSA blocks, with overlapping patterns.
 
@@ -338,13 +355,13 @@
 
                         - Window size $M=7$, head query dimension $d=32$, MLP expansion $\alpha=4$.
 
-                        - Swin-T: $C=96$, layer numbers $=\\{2, 2, 6, 2\\}$.
+                        - Swin-T: $C=96$, blocks $=\\{2, 2, 6, 2\\}$.
 
-                        - Swin-S: $C=96$, layer numbers $=\\{2,2,18,2\\}$.
+                        - Swin-S: $C=96$, blocks $=\\{2,2,18,2\\}$.
 
-                        - Swin-B: $C=128$, layer numbers $=\\{2,2,18,2\\}$.
+                        - Swin-B: $C=128$, blocks $=\\{2,2,18,2\\}$.
 
-                        - Swin-L: $C=192$, layer numbers $=\\{2,2,18,2\\}$.
+                        - Swin-L: $C=192$, blocks $=\\{2,2,18,2\\}$.
                         
                     </textarea>
                 </section>
@@ -370,11 +387,11 @@
                     <textarea data-template>
                         ### ImageNet-1K Classification
 
-                        - _Regular ImageNet-1K training_: AdamW, 300 epochs, learning rate 0.001, weight decay 0.05, batch size 1024, cosine learning rate scheduler, 20 epoch warm-up.
+                        - _Regular ImageNet-1K training_: AdamW, 300 epochs, learning rate (LR) 0.001, weight decay (WD) 0.05, batch size (BS) 1024, cosine learning rate scheduler (LRS), 20 epoch warm-up.
 
                         - _ImageNet-1K + ImageNet-22K pre-training_: 
-                            1. (Pre-training) 90 epochs, weight decay 0.01, batch size 4096, 5-epoch warm-up.
-                            2. (Fine-tuning) 30 epochs, constant learning rate $10^{-5}$, weight decay $10^{-8}$, batch size 1024.
+                            1. (Pre-training) 90 epochs, WD 0.01, BS 4096, 5-epoch warm-up.
+                            2. (Fine-tuning) 30 epochs, constant LR $10^{-5}$, WD $10^{-8}$, BS 1024.
                         
                     </textarea>
                 </section>
@@ -494,7 +511,7 @@
 
                         - Improve stability of deep Swin transformers during training.
 
-                        - Use several training tricks to train 3B parameter model on A100s.      
+                        - Use several training tricks to train 3B parameter model on A100s.  
                         
                     </textarea>
                 </section>
@@ -593,6 +610,170 @@
                         - Benefit: Lower extrapolation ratio when transferring from low-res to high-res images.
 
                     </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Model configurations
+
+                        - _SwinV2-T_: $C=96$, blocks $=\\{2, 2, 6, 2\\}$.
+
+                        - _SwinV2-S/B/L_: $96/128/192$, $\\,\\,\\{2,2,18,2\\}$.
+
+                        - _SwinV2-H_: $352$, $\\,\\,\\{2,2,18,2\\}$.
+
+                        - _SwinV2-G_: $512$, $\\,\\,\\{2, 2, 42, 4\\}$.
+
+                        - H+G have an added LN layer every 6 layers (blocks?).
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### (Large Model) Training
+
+                        - Focus is on training high-res (1536x1536) high-capacity (3B param) models.
+
+                        - Self-supervised pretraining + GPU memory usage tricks.
+
+                        - **Question**: How to handle model scaling (data + compute) for biomedical imaging?
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Self-supervised Pretraining
+
+                        - Uses [SimMIM](https://openaccess.thecvf.com/content/CVPR2022/papers/Xie_SimMIM_A_Simple_Framework_for_Masked_Image_Modeling_CVPR_2022_paper.pdf) on ImageNet-22K-ext.
+
+                        - Additional labeled classification pre-training on same dataset (70M images).
+
+                        ![SimMIM Intro](./img/simmim.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Training Tricks: ZeRO
+
+                        - [Zero-Redundancy Optimizer (ZeRO)](https://arxiv.org/pdf/1910.02054.pdf) optimizes param broadcasts between parallel workers.
+
+                        - Part of [DeepSpeed](https://www.deepspeed.ai/getting-started/), a framework for efficient large model training.
+
+                        - GPU memory reduction with little effect on training speed.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### TT: Activation checkpointing
+
+                        - [Activation checkpointing](https://arxiv.org/pdf/1604.06174.pdf): Trade memory usage for compute usage during training.
+
+                        - Clear intermediate activation arrays during a forward pass, recompute them as needed during a backward pass.
+
+                        - SwinV2 reports 30% slower training.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### TT: Sequential self-attention
+
+                        - For large high-res models, self-attention computation becomes a memory bottleneck.
+
+                        - "[...W]e implement self-attention computation sequentially, instead of using the previous batch computation approach"
+
+                        - i.e. use batch size of 1 (per worker?) for self-attention layers (in first two stages)?
+
+                        - Little impact on training speed.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### SwinV2-G: Self-supervised pre-training
+
+                        - SimMIM on ImageNet-22K-ext (70M images) for 20 epochs at $192\times 192$ res.
+
+                        - AdamW, cosine LRS, 30k steps linear warm-up, BS 9216, LR $1.4\times 10^{-3}$, WD 0.1, gradient clipping at 100 max.
+
+                        - Uses random resize cropping (scales $[0.67, 1]$, aspect ratios $[3/4, 4/3]$), random flipping, color normalization.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### SwinV2-G: Supervised pre-training
+
+                        - Still using ImageNet-22k-ext, for 30 epochs, maybe still at $192\times 192$?
+
+                        - AdamW, cosine LRS, 20k steps linear warm-up, BS 9216, LR $1.4\times 10^{-3}$, layer-wise LR decay 0.86, WD 0.1, gradient clipping at 100 max.
+
+                        - Uses RandAugment, random erasing, stochastic depth (ratio 0.3).
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Conclusions: Swin architecture
+
+                        - Swin approach to vision transformers uses hierarchical windowed self-attention + relative position biases.
+
+                        - More efficient training than ViT, better speed/accuracy tradeoffs. 
+
+                        - Produces multiscale feature maps compatible with existing convnet backbones, useful for detection and segmentation tasks.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Conclusions: Swin training
+
+                        - Lots of sensitive hyperparameters and data augmentation go into vision transformer training.
+
+                        - Pretraining on datasets larger than benchmark datasets is common: data + compute needs remain high.
+
+                        - We start to see importance of self-supervised pretraining for large models.
+
+                        - Large models also start requiring memory optimization tricks, check out [DeepSpeed](https://www.deepspeed.ai/).
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <h2>Thank You!</h2>
                 </section>
 
 
