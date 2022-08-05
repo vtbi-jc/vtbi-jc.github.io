@@ -312,11 +312,9 @@
 
                         - Swin uses 2D **relative position bias**: $$\mathrm{Attention}(Q, K, V)=\mathrm{SoftMax}(QK^T/\sqrt{d}+B)V$$
 
-                        - $B\in\mathbb{R}^{M^2\times M^2}$ parametrized by $\hat{B}\in\mathbb{R}^{(2M-1)\times(2M-1)}$.
+                        - $B\in\mathbb{R}^{M^2\times M^2}$ parametrized by learned $\hat{B}\in\mathbb{R}^{(2M-1)\times(2M-1)}$.
 
-                        - $\hat{B}$ learned.
-
-
+                        - Can be interpolated for higher-res fine-tuning.
                         
                     </textarea>
                 </section>
@@ -328,6 +326,271 @@
                         ### Swin transformer architecture
 
                         ![Swin transformer architecture](./img/swin_arch.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Architecture variants
+
+                        - Window size $M=7$, head query dimension $d=32$, MLP expansion $\alpha=4$.
+
+                        - Swin-T: $C=96$, layer numbers $=\\{2, 2, 6, 2\\}$.
+
+                        - Swin-S: $C=96$, layer numbers $=\\{2,2,18,2\\}$.
+
+                        - Swin-B: $C=128$, layer numbers $=\\{2,2,18,2\\}$.
+
+                        - Swin-L: $C=192$, layer numbers $=\\{2,2,18,2\\}$.
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Experiments
+
+                        - ImageNet-1K classification.
+
+                        - COCO object detection.
+
+                        - ADE20K semantic segmentation.
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### ImageNet-1K Classification
+
+                        - _Regular ImageNet-1K training_: AdamW, 300 epochs, learning rate 0.001, weight decay 0.05, batch size 1024, cosine learning rate scheduler, 20 epoch warm-up.
+
+                        - _ImageNet-1K + ImageNet-22K pre-training_: 
+                            1. (Pre-training) 90 epochs, weight decay 0.01, batch size 4096, 5-epoch warm-up.
+                            2. (Fine-tuning) 30 epochs, constant learning rate $10^{-5}$, weight decay $10^{-8}$, batch size 1024.
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### ImageNet-1K Classification Results
+
+                        <div class="container">
+
+                        <div class="col">
+                            ![Classification results 1](./img/swin_class_res1.png)
+                        </div>
+
+                        <div class="col">
+
+                        ![Classification results 2](./img/swin_class_res2.png)
+                        </div>
+
+                        </div>
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### COCO Object Detection
+
+                        - Feature pyramid output means Swin is a drop-in replacement for convnet backbones.
+
+                        - Backbone comparison in multiple mmseg detection frameworks: Cascade Mask R-CNN, ATSS, RepPoints v2, Sparse RCNN.
+
+                        - Beats previous SOTA on COCO test-dev by +2.7 box AP.
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### COCO Object Detection Results
+
+                        <div class="container">
+
+                        <div class="col">
+                        ![Detection results 1](./img/swin_detect_res1.png)
+                        </div>
+
+                        <div class="col">
+                        ![Detection results 2](./img/swin_detect_res2.png)
+                        </div>
+
+                        </div>
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### ADE20K Semantic Segmentation
+
+                        - _ADE20K_: 150-category semantic segmentation dataset.
+
+                        - Swin backbones + [UPerNet](http://openaccess.thecvf.com/content_ECCV_2018/papers/Tete_Xiao_Unified_Perceptual_Parsing_ECCV_2018_paper.pdf) in mmseg.
+
+                        ![ADE20K Examples](./img/ade20k.png)
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### ADE20K Semantic Segmentation: Results
+
+                        ![Swin segmentation results](./img/swin_seg.png)                        
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Conclusions
+
+                        - Swin transformer introduces an efficient attention mechanism for images.
+
+                        - Produces hierarchical feature maps compatible with dense prediction frameworks.
+
+                        - Achieves SOTA dense prediction results and favorable speed-accuracy tradeoffs.                 
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <h3>Swin Transformer V2: Scaling Up Capacity and Resolution</h3>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Introduction
+
+                        - **Goal**: Efficient training of larger Swin transformers on higher-resolution images.
+
+                        - Improve stability of deep Swin transformers during training.
+
+                        - Use several training tricks to train 3B parameter model on A100s.      
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Contributions
+
+                        - Move $\mathrm{LayerNorm}$ normalization to post-W-MSA/MLP, from pre-.
+
+                        - Replace dot product attention with scaled cosine attention.
+
+                        - Replace relative position bias matrix with log-space continuous position bias MLP for improved low-res to high-res transfer.      
+                        
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Swin V2 Changes
+
+                        <div class="container">
+
+                        <div class="col">
+                        ![Swin V2 intro 1](./img/swin2_intro1.png)
+                        </div>
+
+                        <div class="col">
+                        <br/><br/>
+
+                        ![Swin V2 intro 2](./img/swin2_intro2.png)
+                        </div>
+
+                        </div>
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Post normalization
+
+                        - Motivation: Activation values are unstable in large Swins.
+
+                        - Swapping Attention/MLP and LN order helps.
+
+                        ![Swin Layer Instability](./img/swin2_instability.png)
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Scaled cosine attention
+
+                        - Swin v1: $$\mathrm{Sim}(q, k)=q\cdot k/\sqrt{d}$$
+
+                        - Swin v2: $$\mathrm{Sim}(q, k)=\cos(q,k)/\tau=\left(\frac{q\cdot k}{||q|| ||k||}\right)/\tau$$
+
+                        - $\tau$ is learned, not shared between heads and layers.
+
+                        - Normalization helps stability, reduces small-set dominance in attention maps.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Continuous relative position bias
+
+                        - Small meta-network that is a function of $(\Delta x, \Delta y)$, replaces relative position bias matrix.
+
+                        - $B(\Delta x, \Delta y)=\mathcal{G}(\Delta x, \Delta y)$, where $\mathcal{G}$ is a 2-layer MLP with ReLU.
+
+                    </textarea>
+                </section>
+
+
+
+                <section data-markdown data-background="linear-gradient(#e3a7aa, #65666a0a)">
+                    <textarea data-template>
+                        ### Log-spaced coordinates
+
+                        - Translate raw relative positions to log-spaced: $$\widehat{\Delta x}=\mathrm{sign}(x)\cdot\log(1+|\Delta x|)$$ $$\widehat{\Delta y}=\mathrm{sign}(y)\cdot\log(1+|\Delta y|).$$
+
+                        - Benefit: Lower extrapolation ratio when transferring from low-res to high-res images.
 
                     </textarea>
                 </section>
